@@ -83,6 +83,46 @@
         android:fontFamily="@font/pixel_font"/>
 
     <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/pixel_font"
+        android:text="Chance für alle Jester"
+        android:textColor="@color/pixel_text"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/editChanceAllJester"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/pixel_font"
+        android:hint="z.B. 1"
+        android:inputType="number"
+        android:textColor="@color/pixel_text"
+        android:textColorHint="#888888" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/pixel_font"
+        android:text="Chance für alle anderes Wort"
+        android:textColor="@color/pixel_text"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/editChanceAllRandomWords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/pixel_font"
+        android:hint="z.B. 1"
+        android:inputType="number"
+        android:textColor="@color/pixel_text"
+        android:textColorHint="#888888" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Rollen-Aufdeckungsart"

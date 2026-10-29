@@ -14,11 +14,59 @@ object GameLogic {
     private val roleAssigner = RoleAssigner()
     private var session = GameSession()
 
-    var chanceNoImpostor = 1
     var chanceAllImpostor = 1
+    var chanceNoImpostor = 1
+    var chanceAllJester = 1
     var chanceJester = 1
-
+    var chanceRandomWords = 1
     var chanceOneCrew = 1
+
+    // name, probability (in %), callback method
+    // The callback returns true if it fully set up the game and normal role assignment should be skipped.
+    val chaosModes: List<ChaosMode> = listOf(
+        ChaosMode("No Impostor", { chanceNoImpostor }) { ctx ->
+            ctx.impostorCount = 0
+            ctx.session.isCrewGame = true
+            false
+        },
+        ChaosMode("All Impostor", { chanceAllImpostor }) { ctx ->
+            if (ctx.isGrid) {
+                ctx.session.gridAssignedPairs = MutableList(ctx.playerCount) { Role.IMPOSTOR to null }
+                ctx.session.selectedPair = wordRepository.nextWordPair()
+            } else {
+                ctx.session.players.forEach { it.role = Role.IMPOSTOR }
+            }
+            ctx.session.remainingImpostors = ctx.playerCount
+            ctx.session.startImpostors = ctx.playerCount
+            ctx.session.isImpostorGame = true
+            true
+        },
+        ChaosMode("One Crew", { chanceOneCrew }) { ctx ->
+            ctx.impostorCount = Random.nextInt(1, ctx.playerCount - 1)
+            false
+        },
+        ChaosMode("All Jester", { chanceAllJester }) { ctx ->
+            ctx.impostorCount = 0
+            ctx.session.isJesterGame = true
+            true
+        },
+        ChaosMode("All random Words", { chanceRandomWords }) { ctx ->
+            ctx.impostorCount = 0
+            ctx.session.isRandomWordGame = true
+            true
+        }
+    )
+
+    private fun rollChaosMode(): ChaosMode? {
+        val roll = Random.nextInt(100)
+        var cumulative = 0
+        val mode = chaosModes.firstOrNull {
+            cumulative += it.chance()
+            roll < cumulative
+        }
+        Log.d("GameMode", "Roll=$roll, mode=${mode?.name ?: "Normal"}")
+        return mode
+    }
 
     val players get() = session.players
     val gridAssignedPairs get() = session.gridAssignedPairs
@@ -40,28 +88,9 @@ object GameLogic {
         }.toMutableList()
 
 
-        val chaosRoll = Random.nextInt(100)
-        Log.d("GameMode", "Roll=$chaosRoll")
-
-        when {
-            chaosRoll < chanceNoImpostor -> {
-                // No impostors
-                impostorCount = 0
-                session.isCrewGame = true
-            }
-            chaosRoll < chanceNoImpostor + chanceAllImpostor -> {
-                // All impostors
-                session.players.forEach { it.role = Role.IMPOSTOR }
-                session.remainingImpostors = session.players.size
-                session.startImpostors = session.players.size
-                session.isImpostorGame = true
-                return true
-            }
-            chaosRoll < chanceNoImpostor + chanceAllImpostor + chanceOneCrew -> {
-                // One crew mode
-                impostorCount = Random.nextInt(1, playerNames.size - 1)
-            }
-        }
+        val ctx = ChaosContext(session, playerNames.size, isGrid = false, impostorCount = impostorCount)
+        if (rollChaosMode()?.apply?.invoke(ctx) == true) return true
+        impostorCount = ctx.impostorCount
 
         session.selectedPair = wordRepository.nextWordPair()
 
@@ -88,38 +117,9 @@ object GameLogic {
         }.toMutableList()
 
         // Determine chaos mode like setupGame()
-        val chaosRoll = Random.nextInt(100)
-        Log.d(
-            "GridMode",
-            "Roll=$chaosRoll, NoImp=$chanceNoImpostor, AllImp=$chanceAllImpostor, OneCrew=$chanceOneCrew"
-        )
-
-        when {
-            chaosRoll < chanceNoImpostor -> {
-                // No impostors
-                impostorCount = 0
-                session.isCrewGame = true
-            }
-
-            chaosRoll < chanceNoImpostor + chanceAllImpostor -> {
-                // All impostors
-                session.gridAssignedPairs = List(playerCount) {
-                    Role.IMPOSTOR to null
-                }.shuffled().toMutableList()
-
-                session.selectedPair = wordRepository.nextWordPair()
-                session.startImpostors = playerCount
-                session.remainingImpostors = playerCount
-                session.isImpostorGame = true
-                return
-            }
-
-            chaosRoll < chanceNoImpostor + chanceAllImpostor + chanceOneCrew -> {
-                // One crew mode
-                impostorCount = playerNames.size - Random.nextInt(2, playerNames.size)
-            }
-        }
-
+        val ctx = ChaosContext(session, playerCount, isGrid = true, impostorCount = impostorCount)
+        if (rollChaosMode()?.apply?.invoke(ctx) == true) return
+        impostorCount = ctx.impostorCount
 
         // Proceed as usual otherwise
         val selected = wordRepository.nextWordPair()
@@ -130,7 +130,7 @@ object GameLogic {
             repeat(playerCount - impostorCount - undercoverCount) { add(Role.CREW) }
         }.toMutableList()
 
-        if (roles.count { it == Role.CREW } > 0 && Random.nextInt(100) < chanceJester) {
+        if (roles.count { it == Role.CREW } > 0 && Random.nextInt(100) < chanceAllJester) {
             val crewIndices = roles.withIndex().filter { it.value == Role.CREW }.map { it.index }
             if (crewIndices.isNotEmpty()) {
                 val jesterIndex = crewIndices.random()
@@ -155,6 +155,9 @@ object GameLogic {
 
     fun getWordForPlayer(index: Int): String? {
         val word = session.selectedPair?.crewWord
+
+        if (session.isJesterGame) return  "Du bist Jester. Das Wort ist: \n$word"
+
         return when (session.players.getOrNull(index)?.role) {
             Role.CREW -> word
             Role.JESTER -> "Du bist Jester. Das Wort ist: \n$word"
@@ -185,7 +188,7 @@ object GameLogic {
     fun getRemainingRoleCount(role: Role): Int =
         session.players.count { !it.isEjected && it.role == role }
 
-    fun isGameOver(): Boolean = !session.isCrewGame && session.remainingImpostors == 0 || session.gameEnded
+    fun isGameOver(): Boolean = !session.isCrewGame && !session.isJesterGame && session.remainingImpostors == 0 || session.gameEnded
 
     fun getGameSummary(): String {
         val grouped = session.players.groupBy { it.originalRole }
@@ -211,6 +214,19 @@ object GameLogic {
     }
 }
 
+class ChaosMode(
+    val name: String,
+    val chance: () -> Int,
+    val apply: (ChaosContext) -> Boolean
+)
+
+class ChaosContext(
+    val session: GameSession,
+    val playerCount: Int,
+    val isGrid: Boolean,
+    var impostorCount: Int
+)
+
 class GameSession {
     var players: MutableList<Player> = mutableListOf()
     var selectedPair: WordPair? = null
@@ -219,6 +235,8 @@ class GameSession {
     var gameEnded: Boolean = false
     var isCrewGame: Boolean = false
     var isImpostorGame: Boolean = false
+    var isJesterGame: Boolean = false
+    var isRandomWordGame: Boolean = false
     var gridAssignedPairs: MutableList<Pair<Role, String?>> = mutableListOf()
 }
 

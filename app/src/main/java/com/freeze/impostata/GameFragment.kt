@@ -26,7 +26,6 @@ import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import com.freeze.impostata.GameLogic.players
 import androidx.core.view.isVisible
-import androidx.transition.Visibility
 
 class GameFragment : Fragment() {
     private lateinit var gameLogic: GameLogic
@@ -96,7 +95,9 @@ class GameFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("impostata_prefs", Context.MODE_PRIVATE)
         GameLogic.chanceAllImpostor = prefs.getInt("chance_all_impostor", 1)
         GameLogic.chanceNoImpostor = prefs.getInt("chance_no_impostor", 1)
-        GameLogic.chanceJester = prefs.getInt("chance_jester", 1)
+        GameLogic.chanceAllJester = prefs.getInt("chance_jester", 20)
+        GameLogic.chanceAllJester = prefs.getInt("change_all_jester", 1)
+        GameLogic.chanceRandomWords = prefs.getInt("chance_random_words", 1)
         revealMode = RevealMode.entries[prefs.getInt("reveal_mode", 0)]
     }
 
@@ -697,12 +698,16 @@ class GameFragment : Fragment() {
         val chanceNone = dialogView.findViewById<EditText>(R.id.editChanceNoImpostors)
         val chanceJester = dialogView.findViewById<EditText>(R.id.editChanceJester)
         val chanceOne = dialogView.findViewById<EditText>(R.id.editChanceOne)
+        val chanceAllJester = dialogView.findViewById<EditText>(R.id.editChanceAllJester)
+        val chanceAllRandomWords = dialogView.findViewById<EditText>(R.id.editChanceAllRandomWords)
         val importBtn = dialogView.findViewById<Button>(R.id.btnImportWords)
 
         val prefs = requireContext().getSharedPreferences("impostata_prefs", Context.MODE_PRIVATE)
         chanceAll.setText(prefs.getInt("chance_all_impostor", 1).toString())
         chanceNone.setText(prefs.getInt("chance_no_impostor", 1).toString())
         chanceJester.setText(prefs.getInt("chance_jester", 1).toString())
+        chanceAllJester.setText(prefs.getInt("chance_all_jester", 1).toString())
+        chanceAllRandomWords.setText(prefs.getInt("chance_random_words", 1).toString())
         chanceOne.setText(prefs.getInt("chance_one_crew", 1).toString())
 
         val radioGroup = dialogView.findViewById<RadioGroup>(R.id.revealModeRadioGroup)
@@ -729,6 +734,8 @@ class GameFragment : Fragment() {
                 putInt("chance_no_impostor", chanceNone.text.toString().toIntOrNull() ?: 0)
                 putInt("chance_jester", chanceJester.text.toString().toIntOrNull() ?: 0)
                 putInt("chance_one_crew", chanceOne.text.toString().toIntOrNull() ?: 0)
+                putInt("chance_all_jester", chanceAllJester.text.toString().toIntOrNull() ?: 0)
+                putInt("chance_random_words", chanceAllRandomWords.text.toString().toIntOrNull() ?: 0)
                 putInt("reveal_mode", mode)
             }
 
@@ -736,6 +743,8 @@ class GameFragment : Fragment() {
             GameLogic.chanceNoImpostor = prefs.getInt("chance_no_impostor", 1)
             GameLogic.chanceAllImpostor = prefs.getInt("chance_all_impostor", 1)
             GameLogic.chanceJester = prefs.getInt("chance_jester", 1)
+            GameLogic.chanceAllJester = prefs.getInt("chance_all_jester", 1)
+            GameLogic.chanceRandomWords = prefs.getInt("chance_random_words", 1)
             GameLogic.chanceOneCrew = prefs.getInt("chance_one_crew", 1)
 
             restartGame()
