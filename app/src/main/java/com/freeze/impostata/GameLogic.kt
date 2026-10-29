@@ -93,10 +93,8 @@ object GameLogic {
             Player(name.trim().ifEmpty { "Spieler ${i + 1}" })
         }.toMutableList()
 
-
         val ctx = ChaosContext(session, playerNames.size, isGrid = false, impostorCount = impostorCount)
         if (rollChaosMode()?.apply?.invoke(ctx) == true) return true
-        impostorCount = ctx.impostorCount
 
         session.selectedPair = wordRepository.nextWordPair()
 
@@ -160,7 +158,11 @@ object GameLogic {
     }
 
     fun getWordForPlayer(index: Int): String? {
-        val word = session.selectedPair?.crewWord
+        var word = session.selectedPair?.crewWord
+
+        if (session.isRandomWordGame) {
+            word = wordRepository.nextWordPair().crewWord;
+        }
 
         return when (session.players.getOrNull(index)?.role) {
             Role.CREW -> word
@@ -181,6 +183,12 @@ object GameLogic {
                 it.isEjected = true
             }
         }
+
+        Log.d("Ejected Player", "playerCount=${session.players.count()}, ejected=${ejected}")
+
+        if(session.players.count() == (ejected + 1)) {
+            session.gameEnded = true
+        }
     }
 
     fun checkImpostorGuessAndEndGame(guess: String): Boolean {
@@ -192,12 +200,21 @@ object GameLogic {
     fun getRemainingRoleCount(role: Role): Int =
         session.players.count { !it.isEjected && it.role == role }
 
-    fun isGameOver(): Boolean = !session.isCrewGame && !session.isJesterGame && session.remainingImpostors == 0 || session.gameEnded
+    fun isGameOver(): Boolean = !session.isCrewGame && !session.isJesterGame && !session.isRandomWordGame && session.remainingImpostors == 0 || session.gameEnded
 
     fun getGameSummary(): String {
         val grouped = session.players.groupBy { it.originalRole }
         return buildString {
-            append("Spielzusammenfassung:\n\nDas Wort war: ${session.selectedPair?.crewWord}\n\n")
+            append("Spielzusammenfassung:")
+
+            if(!session.isRandomWordGame && !session.isImpostorGame) {
+                append("\n\nDas Wort war: ${session.selectedPair?.crewWord}")
+                append("\nUndercover Wort: ${session.selectedPair?.undercoverWord}")
+            }
+
+            if(session.isRandomWordGame) append("\n\nJeder hatte ein anderes Wort")
+            append("\n\n")
+
             Role.entries.forEach { role ->
                 grouped[role]?.let {
                     append("🔹 ${role.name}:\n")
