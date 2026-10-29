@@ -68,7 +68,6 @@ class GameFragment : Fragment() {
 
     // Misc views
     private lateinit var btnSettings: ImageButton
-    private lateinit var btnRemainingInfo: ImageButton
     private lateinit var remainingRoleLayout: LinearLayout
 
     // Game state
@@ -237,7 +236,6 @@ class GameFragment : Fragment() {
         wordTextHold = view.findViewById(R.id.wordTextClick)
 
 
-        btnRemainingInfo = view.findViewById(R.id.remainingRolesInfo)
         remainingRoleLayout = view.findViewById(R.id.remainingRolesLayout)
 
         btnSettings = view.findViewById(R.id.settingsButton)
@@ -277,11 +275,6 @@ class GameFragment : Fragment() {
 
         btnSettings.setOnClickListener {
             showSettingsDialog()
-        }
-
-        btnRemainingInfo.setOnClickListener {
-            remainingRoleLayout.visibility = if (remainingRoleLayout.isVisible) View.GONE else View.VISIBLE
-
         }
     }
 
@@ -541,19 +534,7 @@ class GameFragment : Fragment() {
 
     private fun startVoting() {
         if (gameLogic.gameEnded) return
-
         setGamePhase(GamePhase.VOTING)
-
-        view?.findViewById<TextView>(R.id.votingImpostorCountText)?.text =
-            GameLogic.getRemainingRoleCount(Role.IMPOSTOR).toString()
-
-        view?.findViewById<TextView>(R.id.votingUndercoverCountText)?.text =
-            GameLogic.getRemainingRoleCount(Role.UNDERCOVER).toString()
-
-        view?.findViewById<TextView>(R.id.votingCrewCountText)?.text =
-            GameLogic.getRemainingRoleCount(Role.CREW).toString()
-
-
 
         votingButtonsContainer.removeAllViews()
 
@@ -579,8 +560,31 @@ class GameFragment : Fragment() {
 
             }
         }
+        val noImpostorButton = Button(ContextThemeWrapper(requireContext(), R.style.PixelButton)).apply {
+            text = "Kein Impostor vorhanden"
+            typeface = ResourcesCompat.getFont(context, R.font.pixel_font)
+            setTextColor(ContextCompat.getColor(context, R.color.pixel_text))
+            textSize = 14f
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0,0,0,0)
+            }
+
+            setOnClickListener { voteNoImpostor() }
+        }
+
+        votingButtonsContainer.addView(noImpostorButton)
     }
 
+    private fun voteNoImpostor() {
+        setGamePhase(GamePhase.RESULT)
+        voteResultText.text = "Das Spiel wurde beendet";
+        btnContinueVoting.visibility = View.GONE
+        showGameEndDialog()
+        btnRestartGame.visibility = View.VISIBLE
+    }
     @SuppressLint("SetTextI18n")
     private fun resolveVote(index: Int) {
         setGamePhase(GamePhase.RESULT)
