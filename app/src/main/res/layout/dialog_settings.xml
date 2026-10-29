@@ -7,6 +7,18 @@
     android:padding="16dp"
     android:background="@drawable/pixel_panel">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -169,6 +181,9 @@
         android:text="Wörter importieren"
         style="@style/PixelButton"
         android:layout_marginTop="12dp"/>
+
+    </LinearLayout>
+    </ScrollView>
 
     <include layout="@layout/dialog_buttons_horizontal"/>
 </LinearLayout>

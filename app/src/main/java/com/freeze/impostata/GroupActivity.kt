@@ -22,9 +22,13 @@ import com.google.gson.Gson
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
+import android.annotation.SuppressLint
 import android.util.Log
+import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 
 
 class GroupActivity : AppCompatActivity() {
@@ -227,9 +231,84 @@ class GroupActivity : AppCompatActivity() {
             }
         }
 
+        val dragHandle = ImageView(this).apply {
+            setImageResource(R.drawable.ic_drag_handle)
+            contentDescription = "Verschieben"
+            val size = (40 * resources.displayMetrics.density).toInt()
+            layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            setPadding(size / 5, size / 5, size / 5, size / 5)
+        }
+        attachDragHandle(dragHandle, row, container)
+
+        row.addView(dragHandle)
         row.addView(input)
         row.addView(deleteBtn)
         container.addView(row)
+    }
+
+    // Reorders rows by swapping the dragged row with its neighbours. The neighbour is moved
+    // rather than the dragged row, because removing the dragged row would cancel the gesture.
+    @SuppressLint("ClickableViewAccessibility")
+    private fun attachDragHandle(handle: View, row: View, container: LinearLayout) {
+        var lastRawY = 0f
+        var awaitingLayout = false
+
+        // After a swap the row's top jumps; offset translationY so it stays under the finger
+        val layoutListener = View.OnLayoutChangeListener { _, _, top, _, _, _, oldTop, _, _ ->
+            if (top != oldTop) row.translationY -= (top - oldTop)
+            awaitingLayout = false
+        }
+
+        handle.setOnTouchListener { v, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                    lastRawY = event.rawY
+                    awaitingLayout = false
+                    row.addOnLayoutChangeListener(layoutListener)
+                    row.animate().cancel()
+                    row.alpha = 0.7f
+                    row.translationZ = 16f
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    row.translationY += event.rawY - lastRawY
+                    lastRawY = event.rawY
+
+                    if (!awaitingLayout) {
+                        val index = container.indexOfChild(row)
+                        val center = row.top + row.translationY + row.height / 2f
+                        val next = container.getChildAt(index + 1)
+                        val prev = if (index > 0) container.getChildAt(index - 1) else null
+
+                        if (next != null && center > next.top + next.height / 2f) {
+                            awaitingLayout = true
+                            container.removeView(next)
+                            container.addView(next, index)
+                        } else if (prev != null && center < prev.top + prev.height / 2f) {
+                            awaitingLayout = true
+                            container.removeView(prev)
+                            container.addView(prev, index)
+                        }
+                    }
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.parent.requestDisallowInterceptTouchEvent(false)
+                    row.removeOnLayoutChangeListener(layoutListener)
+                    row.animate()
+                        .translationY(0f)
+                        .translationZ(0f)
+                        .alpha(1f)
+                        .setDuration(150)
+                        .start()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
 
