@@ -48,12 +48,18 @@ object GameLogic {
         ChaosMode("All Jester", { chanceAllJester }) { ctx ->
             ctx.impostorCount = 0
             ctx.session.isJesterGame = true
+            if (ctx.isGrid) {
+                ctx.session.gridAssignedPairs = MutableList(ctx.playerCount) { Role.JESTER to null}
+            } else {
+                ctx.session.players.forEach { it.role = Role.JESTER }
+            }
+            ctx.session.selectedPair = wordRepository.nextWordPair()
             true
         },
         ChaosMode("All random Words", { chanceRandomWords }) { ctx ->
             ctx.impostorCount = 0
             ctx.session.isRandomWordGame = true
-            true
+            false
         }
     )
 
@@ -130,7 +136,7 @@ object GameLogic {
             repeat(playerCount - impostorCount - undercoverCount) { add(Role.CREW) }
         }.toMutableList()
 
-        if (roles.count { it == Role.CREW } > 0 && Random.nextInt(100) < chanceAllJester) {
+        if (roles.count { it == Role.CREW } > 0 && Random.nextInt(100) < chanceJester && !ctx.session.isJesterGame) {
             val crewIndices = roles.withIndex().filter { it.value == Role.CREW }.map { it.index }
             if (crewIndices.isNotEmpty()) {
                 val jesterIndex = crewIndices.random()
@@ -155,8 +161,6 @@ object GameLogic {
 
     fun getWordForPlayer(index: Int): String? {
         val word = session.selectedPair?.crewWord
-
-        if (session.isJesterGame) return  "Du bist Jester. Das Wort ist: \n$word"
 
         return when (session.players.getOrNull(index)?.role) {
             Role.CREW -> word
