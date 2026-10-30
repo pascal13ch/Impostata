@@ -720,6 +720,7 @@ class GameFragment : Fragment() {
         val chanceAllJester = dialogView.findViewById<EditText>(R.id.editChanceAllJester)
         val chanceAllRandomWords = dialogView.findViewById<EditText>(R.id.editChanceAllRandomWords)
         val importBtn = dialogView.findViewById<Button>(R.id.btnImportWords)
+        val wordCountText = dialogView.findViewById<TextView>(R.id.wordCount)
 
         val prefs = requireContext().getSharedPreferences("impostata_prefs", Context.MODE_PRIVATE)
         chanceAll.setText(prefs.getInt("chance_all_impostor", 1).toString())
@@ -728,6 +729,8 @@ class GameFragment : Fragment() {
         chanceAllJester.setText(prefs.getInt("chance_all_jester", 1).toString())
         chanceAllRandomWords.setText(prefs.getInt("chance_random_words", 1).toString())
         chanceOne.setText(prefs.getInt("chance_one_crew", 1).toString())
+
+        wordCountText.text = "Anzahl Wörter: " + GameLogic.wordCount.toString()
 
         val radioGroup = dialogView.findViewById<RadioGroup>(R.id.revealModeRadioGroup)
         when (prefs.getInt("reveal_mode", 0)) {

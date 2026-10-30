@@ -7,6 +7,7 @@ import android.util.Log
 import com.freeze.impostata.model.Player
 import com.freeze.impostata.model.Role
 import com.freeze.impostata.model.WordPair
+import kotlin.collections.mutableListOf
 import kotlin.random.Random
 
 object GameLogic {
@@ -231,6 +232,8 @@ object GameLogic {
         wordRepository.reset()
     }
 
+    val wordCount: Int get() = wordRepository.totalCount()
+
     fun addWordPair(crew: String, undercover: String) {
         wordRepository.addCustomPair(WordPair(crew.trim(), undercover.trim()))
     }
@@ -298,6 +301,8 @@ class WordRepository {
         customWordPairs.add(pair)
         wordPairs = (wordPairsMaster + customWordPairs).toMutableList()
     }
+
+    fun totalCount(): Int = wordPairsMaster.size + customWordPairs.size
 }
 
 class RoleAssigner {
