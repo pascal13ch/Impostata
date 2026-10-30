@@ -164,6 +164,7 @@ object GameLogic {
             word = wordRepository.nextWordPair().crewWord;
         }
 
+
         return when (session.players.getOrNull(index)?.role) {
             Role.CREW -> word
             Role.JESTER -> "Du bist Jester. Das Wort ist: \n$word"

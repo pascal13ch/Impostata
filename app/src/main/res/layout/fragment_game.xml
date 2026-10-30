@@ -11,6 +11,7 @@
 
 
     <!-- Setup Phase -->
+
     <include
         layout="@layout/layout_game_setup"
         android:visibility="visible"/>

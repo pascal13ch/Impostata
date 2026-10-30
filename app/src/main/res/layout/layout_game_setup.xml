@@ -98,13 +98,31 @@
                     android:layout_height="40dp"
                     android:text="–" />
 
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="4dp"
-                    android:contentDescription="Undercover Icon"
-                    android:src="@drawable/ic_undercover" />
+                <LinearLayout
+                    android:layout_width="88dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:contentDescription="Undercover Icon"
+                        android:src="@drawable/nici" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:alpha="0.7"
+                        android:fontFamily="@font/pixel_font"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="Undercover"
+                        android:textColor="@color/pixel_text"
+                        android:textSize="8sp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/undercoverCountText"
@@ -141,13 +159,31 @@
                     android:layout_height="40dp"
                     android:text="–" />
 
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="4dp"
-                    android:contentDescription="Impostor Icon"
-                    android:src="@drawable/ic_impostor_ma" />
+                <LinearLayout
+                    android:layout_width="88dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:contentDescription="Impostor Icon"
+                        android:src="@drawable/maru" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:alpha="0.7"
+                        android:fontFamily="@font/pixel_font"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="Impostor"
+                        android:textColor="@color/pixel_text"
+                        android:textSize="8sp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/ImpostorCountText"
@@ -168,6 +204,7 @@
                     android:layout_height="40dp"
                     android:layout_marginStart="4dp"
                     android:text="+" />
+
             </LinearLayout>
             <!-- Civilians -->
             <LinearLayout
@@ -177,13 +214,31 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="4dp"
-                    android:contentDescription="Crew Icon"
-                    android:src="@drawable/ic_crew" />
+                <LinearLayout
+                    android:layout_width="88dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:contentDescription="Crew Icon"
+                        android:src="@drawable/yanu" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:alpha="0.7"
+                        android:fontFamily="@font/pixel_font"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="Crew"
+                        android:textColor="@color/pixel_text"
+                        android:textSize="8sp" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/civilianCountText"

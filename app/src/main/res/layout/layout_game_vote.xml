@@ -26,8 +26,8 @@
             android:id="@+id/remainingRolesInfo"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:contentDescription="PlayerInfo"
-            android:background="@drawable/ic_crew"/>
+            android:background="@drawable/yanu"
+            android:contentDescription="PlayerInfo" />
     </LinearLayout>
 
     <LinearLayout

@@ -25,6 +25,15 @@
         android:layout_marginTop="4dp"
         android:fontFamily="@font/pixel_font" />
 
+    <ImageView
+        android:id="@+id/role_image"
+        android:layout_width="238dp"
+        android:layout_height="92dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="4dp"
+        android:contentDescription="Role Image"
+        android:visibility="gone" />
+
     <Button
         android:id="@+id/btnRevealClose"
         android:layout_width="wrap_content"

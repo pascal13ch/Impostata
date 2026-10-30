@@ -12,20 +12,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
-import androidx.core.view.children
-import androidx.fragment.app.Fragment
-import com.freeze.impostata.model.Role
-import com.freeze.impostata.model.GamePhase
-import com.freeze.impostata.model.RevealMode
+import android.widget.Button
+import android.widget.EditText
+import android.widget.GridLayout
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RadioGroup
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
-import com.freeze.impostata.GameLogic.players
+import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import com.freeze.impostata.GameLogic.players
+import com.freeze.impostata.model.GamePhase
+import com.freeze.impostata.model.RevealMode
+import com.freeze.impostata.model.Role
 
 class GameFragment : Fragment() {
     private lateinit var gameLogic: GameLogic
@@ -433,10 +442,16 @@ class GameFragment : Fragment() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_card_reveal, null)
         val nameText = dialogView.findViewById<TextView>(R.id.DrevealName)
         val wordText = dialogView.findViewById<TextView>(R.id.DrevealWord)
+        val roleImage = dialogView.findViewById<ImageView>(R.id.role_image)
 
         val player = players[playerIndex]
         nameText.text = player.name
         wordText.text = GameLogic.getWordForPlayer(playerIndex) ?: "Kein Wort"
+
+        if(wordText.text.contains("Impostor")) {
+            roleImage.visibility = View.VISIBLE
+            roleImage.setImageResource(R.drawable.maru)
+        }
 
         val dialog = AlertDialog.Builder(requireContext(), R.style.PixelDialog)
             .setView(dialogView)
