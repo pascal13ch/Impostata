@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.GridLayout
@@ -20,6 +21,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.SeekBar
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -35,6 +37,7 @@ import com.freeze.impostata.GameLogic.players
 import com.freeze.impostata.model.GamePhase
 import com.freeze.impostata.model.RevealMode
 import com.freeze.impostata.model.Role
+import com.freeze.impostata.model.WordCategory
 
 class GameFragment : Fragment() {
     private lateinit var gameLogic: GameLogic
@@ -59,6 +62,7 @@ class GameFragment : Fragment() {
     private lateinit var btnImpostorPlus: Button
     private lateinit var btnImpostorMinus: Button
     private lateinit var groupContainer: LinearLayout
+    private lateinit var categorySpinner: Spinner
 
     // Playing phase views
     private lateinit var currentPlayerText: TextView
@@ -162,12 +166,14 @@ class GameFragment : Fragment() {
             .filter { it.isNotEmpty() }
             .toList()
 
+        Log.d("Game Setup", "selectedCategory=${categorySpinner.selectedItem}")
+        val category = WordCategory.fromDisplayName(categorySpinner.selectedItem.toString())
         val (undercoverCount, impostorCount, _) = getRoleCounts()
 
         if (revealMode == RevealMode.GRID_SELECTION) {
-            gameLogic.prepareRolesForGrid(playerNames, undercoverCount, impostorCount)
+            gameLogic.prepareRolesForGrid(playerNames, undercoverCount, impostorCount, category, requireContext())
         } else {
-            if (!gameLogic.setupGame(playerNames, undercoverCount, impostorCount)) {
+            if (!gameLogic.setupGame(playerNames, undercoverCount, impostorCount, category, requireContext())) {
                 Toast.makeText(requireContext(), "Zu viele Undercover/Impostor für diese Spieleranzahl.", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -198,7 +204,7 @@ class GameFragment : Fragment() {
             }
             RevealMode.GRID_SELECTION -> {
                 requireView().findViewById<View>(R.id.revealGrid)?.visibility = View.VISIBLE
-                setupCardGrid()
+                setupCardGrid(category, requireContext())
             }
         }
 
@@ -248,7 +254,17 @@ class GameFragment : Fragment() {
         remainingRoleLayout = view.findViewById(R.id.remainingRolesLayout)
 
         btnSettings = view.findViewById(R.id.settingsButton)
+
+        categorySpinner = view.findViewById(R.id.categorySpinner)
+        categorySpinner.adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.item_category_spinner,
+            WordCategory.entries
+        ).apply { setDropDownViewResource(R.layout.item_category_spinner) }
     }
+
+    private val selectedCategory: WordCategory
+        get() = categorySpinner.selectedItem as WordCategory
 
     //Sets up all the listeners
     private fun setupListeners() {
@@ -376,7 +392,7 @@ class GameFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setupCardGrid() {
+    private fun setupCardGrid(category: WordCategory, context: Context) {
         val grid = requireView().findViewById<GridLayout>(R.id.cardGrid)
         Log.d("DEBUG", "Setting up card grid with ${players.size} players")
 
@@ -384,7 +400,7 @@ class GameFragment : Fragment() {
 
         if (GameLogic.gridAssignedPairs.size != players.size) {
             // Rebuild roles only if needed
-            GameLogic.prepareRolesForGrid(players.map { it.name }, undercoverCount, impostorCount)
+            GameLogic.prepareRolesForGrid(players.map { it.name }, undercoverCount, impostorCount, category, context)
         }
 
 

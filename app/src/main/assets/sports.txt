@@ -1,0 +1,80 @@
+Fußball,Rugby
+Basketball,Volleyball
+Handball,Wasserball
+Tennis,Badminton
+Tischtennis,Squash
+Golf,Minigolf
+Eishockey,Feldhockey
+Baseball,Cricket
+American Football,Rugby
+Skifahren,Snowboarden
+Langlauf,Biathlon
+Schlittschuhlaufen,Rollschuhfahren
+Eiskunstlauf,Tanzen
+Curling,Bowling
+Bowling,Kegeln
+Darts,Billard
+Schwimmen,Tauchen
+Surfen,Windsurfen
+Kitesurfen,Wakeboarden
+Rudern,Kanu
+Segeln,Kajak
+Joggen,Walking
+Marathon,Triathlon
+Sprint,Hürdenlauf
+Weitsprung,Hochsprung
+Stabhochsprung,Hochsprung
+Speerwurf,Diskuswurf
+Kugelstoßen,Hammerwurf
+Radfahren,Mountainbiken
+BMX,Skateboarden
+Klettern,Bouldern
+Wandern,Bergsteigen
+Boxen,Kickboxen
+Judo,Karate
+Ringen,Sumo
+Taekwondo,Kung Fu
+Fechten,Bogenschießen
+Schießen,Bogenschießen
+Reiten,Polo
+Turnen,Akrobatik
+Yoga,Pilates
+Krafttraining,Crossfit
+Fitnessstudio,Turnhalle
+Formel 1,Rallye
+Motocross,Kartfahren
+Fallschirmspringen,Paragliding
+Bungee-Jumping,Fallschirmspringen
+Schach,Dame
+E-Sport,Videospiel
+Weltmeisterschaft,Europameisterschaft
+Olympische Spiele,Paralympics
+Champions League,Bundesliga
+Tor,Korb
+Schiedsrichter,Linienrichter
+Trainer,Kapitän
+Torwart,Verteidiger
+Stürmer,Mittelfeldspieler
+Elfmeter,Freistoß
+Rote Karte,Gelbe Karte
+Abseits,Foul
+Medaille,Pokal
+Goldmedaille,Silbermedaille
+Stadion,Arena
+Tribüne,Fankurve
+Trikot,Trainingsanzug
+Turnschuh,Fußballschuh
+Ball,Puck
+Schläger,Kelle
+Netz,Tor
+Stoppuhr,Pfeife
+Hantel,Kettlebell
+Laufband,Ergometer
+Sprungbrett,Trampolin
+Halbzeit,Verlängerung
+Weltrekord,Bestzeit
+Messi,Ronaldo
+Federer,Nadal
+Usain Bolt,Carl Lewis
+Michael Jordan,LeBron James
+Serena Williams,Steffi Graf

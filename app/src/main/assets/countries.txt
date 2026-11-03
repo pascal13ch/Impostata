@@ -1,0 +1,80 @@
+Deutschland,Österreich
+Schweiz,Liechtenstein
+Frankreich,Belgien
+Spanien,Portugal
+Italien,Griechenland
+Niederlande,Dänemark
+Schweden,Norwegen
+Finnland,Estland
+Island,Irland
+England,Schottland
+Polen,Tschechien
+Ungarn,Rumänien
+Kroatien,Slowenien
+Serbien,Bosnien
+Bulgarien,Türkei
+Russland,Ukraine
+Litauen,Lettland
+Luxemburg,Monaco
+Malta,Zypern
+Albanien,Montenegro
+USA,Kanada
+Mexiko,Kuba
+Brasilien,Argentinien
+Chile,Peru
+Kolumbien,Venezuela
+Ecuador,Bolivien
+Uruguay,Paraguay
+Jamaika,Bahamas
+China,Japan
+Südkorea,Nordkorea
+Thailand,Vietnam
+Indien,Pakistan
+Indonesien,Malaysia
+Philippinen,Taiwan
+Singapur,Hongkong
+Nepal,Bhutan
+Mongolei,Kasachstan
+Iran,Irak
+Israel,Libanon
+Saudi-Arabien,Vereinigte Arabische Emirate
+Katar,Kuwait
+Ägypten,Marokko
+Tunesien,Algerien
+Südafrika,Namibia
+Kenia,Tansania
+Nigeria,Ghana
+Äthiopien,Somalia
+Madagaskar,Mauritius
+Australien,Neuseeland
+Fidschi,Samoa
+Grönland,Island
+Vatikan,San Marino
+Andorra,Liechtenstein
+Sri Lanka,Malediven
+Kambodscha,Laos
+Georgien,Armenien
+Belarus,Moldau
+Costa Rica,Panama
+Haiti,Dominikanische Republik
+Senegal,Elfenbeinküste
+Berlin,Wien
+Paris,London
+Rom,Madrid
+New York,Los Angeles
+Tokio,Peking
+Zürich,Genf
+Amsterdam,Brüssel
+Moskau,Kiew
+Sydney,Melbourne
+Rio de Janeiro,Buenos Aires
+Kairo,Istanbul
+Dubai,Doha
+Bangkok,Singapur
+Prag,Budapest
+Stockholm,Kopenhagen
+Lissabon,Barcelona
+Athen,Venedig
+Oslo,Helsinki
+Toronto,Vancouver
+Mumbai,Delhi

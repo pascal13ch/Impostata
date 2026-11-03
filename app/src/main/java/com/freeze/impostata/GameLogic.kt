@@ -6,7 +6,9 @@ import android.content.Context
 import android.util.Log
 import com.freeze.impostata.model.Player
 import com.freeze.impostata.model.Role
+import com.freeze.impostata.model.WordCategory
 import com.freeze.impostata.model.WordPair
+import java.util.Locale
 import kotlin.collections.mutableListOf
 import kotlin.random.Random
 
@@ -33,7 +35,6 @@ object GameLogic {
         ChaosMode("All Impostor", { chanceAllImpostor }) { ctx ->
             if (ctx.isGrid) {
                 ctx.session.gridAssignedPairs = MutableList(ctx.playerCount) { Role.IMPOSTOR to null }
-                ctx.session.selectedPair = wordRepository.nextWordPair()
             } else {
                 ctx.session.players.forEach { it.role = Role.IMPOSTOR }
             }
@@ -54,7 +55,7 @@ object GameLogic {
             } else {
                 ctx.session.players.forEach { it.role = Role.JESTER }
             }
-            ctx.session.selectedPair = wordRepository.nextWordPair()
+            ctx.session.selectedPair = wordRepository.getRandomWordPair()
             true
         },
         ChaosMode("All random Words", { chanceRandomWords }) { ctx ->
@@ -85,7 +86,7 @@ object GameLogic {
     val gameEnded: Boolean
         get() = session.gameEnded
 
-    fun setupGame(playerNames: List<String>, undercoverCount: Int, impostorCountOriginal: Int): Boolean {
+    fun setupGame(playerNames: List<String>, undercoverCount: Int, impostorCountOriginal: Int, wordCategory: WordCategory, context: Context): Boolean {
         session = GameSession()
         var impostorCount = impostorCountOriginal
         if (undercoverCount + impostorCount >= playerNames.size) return false
@@ -94,10 +95,10 @@ object GameLogic {
             Player(name.trim().ifEmpty { "Spieler ${i + 1}" })
         }.toMutableList()
 
+        session.selectedPair = wordRepository.getRandomWordPair(wordCategory, context)
+
         val ctx = ChaosContext(session, playerNames.size, isGrid = false, impostorCount = impostorCount)
         if (rollChaosMode()?.apply?.invoke(ctx) == true) return true
-
-        session.selectedPair = wordRepository.nextWordPair()
 
         session.players.forEach { it.role = Role.CREW }
         roleAssigner.assign(session.players, Role.UNDERCOVER, undercoverCount)
@@ -112,7 +113,7 @@ object GameLogic {
         return true
     }
 
-    fun prepareRolesForGrid(playerNames: List<String>, undercoverCount: Int, impostorCountOriginal: Int) {
+    fun prepareRolesForGrid(playerNames: List<String>, undercoverCount: Int, impostorCountOriginal: Int, wordCategory: WordCategory, context: Context) {
         session = GameSession()
         val playerCount = playerNames.size
         var impostorCount = impostorCountOriginal
@@ -127,7 +128,8 @@ object GameLogic {
         impostorCount = ctx.impostorCount
 
         // Proceed as usual otherwise
-        val selected = wordRepository.nextWordPair()
+        val selected = wordRepository.getRandomWordPair(wordCategory, context)
+        Log.d("Word Generator", "generatedWord=${selected}")
 
         val roles = buildList {
             repeat(impostorCount) { add(Role.IMPOSTOR) }
@@ -255,6 +257,7 @@ class ChaosContext(
 class GameSession {
     var players: MutableList<Player> = mutableListOf()
     var selectedPair: WordPair? = null
+    var category: WordCategory? = null
     var remainingImpostors: Int = 0
     var startImpostors: Int = 0
     var gameEnded: Boolean = false
@@ -285,12 +288,41 @@ class WordRepository {
         reset()
     }
 
+    fun loadWords(context: Context, category: WordCategory) {
+        if (category == WordCategory.STANDARD) {
+            init(context)
+            wordPairs = (wordPairsMaster + customWordPairs).toMutableList();
+        } else {
+            wordPairs = context.assets.open(category.id + ".txt")
+                .bufferedReader()
+                .lineSequence()
+                .mapNotNull { line ->
+                    val parts = line.split(',')
+                    if (parts.size == 2) WordPair(parts[0].trim(), parts[1].trim()) else null
+                }
+                .toList() as MutableList<WordPair>
+
+        }
+    }
+
     fun nextWordPair(): WordPair {
         if (wordPairs.isEmpty()) {
             usedWordPairs.clear()
             wordPairs = (wordPairsMaster + customWordPairs).toMutableList()
         }
         return wordPairs.removeAt(Random.nextInt(wordPairs.size)).also { usedWordPairs.add(it) }
+    }
+
+    fun getRandomWordPair(category: WordCategory, context: Context): WordPair {
+        loadWords(context, category)
+        wordPairs.shuffle()
+        return wordPairs.first();
+    }
+
+    fun getRandomWordPair(): WordPair {
+        wordPairs = (wordPairsMaster + customWordPairs).toMutableList();
+        wordPairs.shuffle()
+        return wordPairs.first();
     }
 
     fun reset() {
